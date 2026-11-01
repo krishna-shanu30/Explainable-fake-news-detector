@@ -94,7 +94,7 @@ Streamlit will print a local URL, usually http://localhost:8501.
 ## Run tests
 
 ```bash
-pytest -q
+python -m pytest -q
 ```
 
 The GitHub Actions workflow runs the tests on pushes and pull requests targeting `main`.
