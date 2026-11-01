@@ -4,8 +4,8 @@ from __future__ import annotations
 import re
 from functools import lru_cache
 
-_URL_RE = re.compile(r"http\\S+", flags=re.IGNORECASE)
-_NON_ALPHANUMERIC_RE = re.compile(r"[^a-zA-Z0-9\\s]+")
+_URL_RE = re.compile(r"http\S+", flags=re.IGNORECASE)
+_NON_ALPHANUMERIC_RE = re.compile(r"[^a-zA-Z0-9\s]+")
 
 
 @lru_cache(maxsize=1)
