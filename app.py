@@ -74,6 +74,8 @@ if analyze:
             st.components.v1.html(explanation, height=620, scrolling=True)
         except ModelLoadError as exc:
             st.error(str(exc))
+        except ValueError as exc:
+            st.warning(str(exc))
         except Exception as exc:  # Keep unexpected failures visible without crashing the page.
             st.error("The analysis could not be completed. Check the model files and application logs.")
             st.exception(exc)
