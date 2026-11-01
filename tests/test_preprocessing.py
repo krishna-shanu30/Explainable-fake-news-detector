@@ -15,7 +15,16 @@ def test_clean_text_rejects_number():
 
 
 def test_clean_text_returns_string():
-    # This test also checks that the configured NLTK resources are available.
     result = clean_text("The quick brown foxes are running!")
     assert isinstance(result, str)
     assert "the" not in result.split()
+
+
+def test_clean_text_removes_urls_and_punctuation():
+    result = clean_text("Visit https://example.com/path now! Breaking-news, today.")
+    assert "https" not in result
+    assert "example" not in result
+    assert "!" not in result
+    assert "," not in result
+    assert "-" not in result
+    assert "breakingnews" in result
