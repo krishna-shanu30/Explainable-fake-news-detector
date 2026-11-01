@@ -15,8 +15,12 @@ def _explainer():
 
 def explain_text(text: str, num_features: int = 10) -> str:
     """Return a self-contained HTML explanation for a single article."""
-    if not text or not text.strip():
+    if not isinstance(text, str):
+        raise TypeError("Article text must be a string.")
+    if not text.strip():
         raise ValueError("Article text cannot be empty.")
+    if not isinstance(num_features, int) or isinstance(num_features, bool) or num_features < 1:
+        raise ValueError("num_features must be a positive integer.")
 
     explanation = _explainer().explain_instance(
         text_instance=text,
