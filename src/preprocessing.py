@@ -4,13 +4,15 @@ from __future__ import annotations
 import re
 from functools import lru_cache
 
-_URL_RE = re.compile(r"http\S+", flags=re.IGNORECASE)
-_NON_ALPHANUMERIC_RE = re.compile(r"[^a-zA-Z0-9\s]+")
+_URL_RE = re.compile(r"http\\S+", flags=re.IGNORECASE)
+_NON_ALPHANUMERIC_RE = re.compile(r"[^a-zA-Z0-9\\s]+")
 
 
 @lru_cache(maxsize=1)
 def _nltk_resources():
-    """Load the English resources used by the original training script."""
+    """Load required English corpora, downloading them on first cloud startup if needed."""
+    import nltk
+
     try:
         from nltk.corpus import stopwords
         from nltk.stem import WordNetLemmatizer
@@ -19,10 +21,28 @@ def _nltk_resources():
         lemmatizer = WordNetLemmatizer()
         lemmatizer.lemmatize("articles")
         return words, lemmatizer
-    except LookupError as exc:
-        raise RuntimeError(
-            "NLTK data is missing. Run: python -m nltk.downloader stopwords wordnet"
-        ) from exc
+    except LookupError:
+        # Streamlit Community Cloud does not automatically install NLTK corpora
+        # when pip installs requirements.txt. Fetch only the two resources used.
+        for resource in ("stopwords", "wordnet"):
+            if not nltk.download(resource, quiet=True):
+                raise RuntimeError(
+                    "Could not download the NLTK language resources. "
+                    "Check the app logs and redeploy."
+                )
+        try:
+            from nltk.corpus import stopwords
+            from nltk.stem import WordNetLemmatizer
+
+            words = set(stopwords.words("english"))
+            lemmatizer = WordNetLemmatizer()
+            lemmatizer.lemmatize("articles")
+            return words, lemmatizer
+        except LookupError as exc:
+            raise RuntimeError(
+                "NLTK language resources are still unavailable after download. "
+                "Check the app logs and redeploy."
+            ) from exc
 
 
 def clean_text(text: str) -> str:
