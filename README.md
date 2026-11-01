@@ -99,15 +99,36 @@ pytest -q
 
 The GitHub Actions workflow runs the tests on pushes and pull requests targeting `main`.
 
-## Deploy with Streamlit Community Cloud
+## Deploy online with Streamlit Community Cloud
 
-1. Push the repository to GitHub.
-2. Sign in to https://share.streamlit.io/.
-3. Create an app from this repository.
-4. Select branch `main` and entrypoint `app.py`.
-5. Deploy. The application installs dependencies from `requirements.txt`. Download the NLTK resources as shown in the local setup steps before running the app; if they are missing, the app displays a clear setup error.
+This repository is configured for Streamlit Community Cloud. Once the one-time deployment is created, Community Cloud rebuilds the app automatically when new commits are pushed to `main`.
 
-Keep the model and vectorizer files in the repository root, or update the artifact paths in `src/prediction.py`.
+### One-time deployment
+
+1. Open [Streamlit Community Cloud](https://share.streamlit.io/) and sign in with GitHub.
+2. Select **Create app**.
+3. Choose this repository: `krishna-shanu30/Explainable-fake-news-detector`.
+4. Select branch `main`.
+5. Set the main file path to `app.py`.
+6. Select **Deploy** and wait for the first build to finish.
+7. Copy the public app URL and add it to your portfolio.
+
+The app installs Python dependencies from `requirements.txt`. NLTK's `stopwords` and `wordnet` data are downloaded automatically the first time they are needed, so no manual terminal setup is required on the hosting service.
+
+### Automatic updates
+
+After the initial deployment, pushing changes to `main` triggers an automatic rebuild. You do not need to start Streamlit manually or redeploy each update. The app may briefly restart while Community Cloud installs and starts the new version.
+
+### Deployment notes
+
+- The app entry point is `app.py`; the checked-in model and vectorizer files must remain in the repository root.
+- The Python version is set in `runtime.txt`.
+- The `.streamlit/config.toml` file contains the server configuration used by the hosted app.
+- The first startup can take longer while dependencies and NLTK data are installed.
+- Streamlit Community Cloud may sleep an app after a period of inactivity; opening its public URL wakes it.
+- Do not commit API keys, passwords, or other secrets to the repository.
+
+**Important:** GitHub access alone cannot create or authorize a Streamlit Community Cloud deployment. The repository owner must complete the one-time sign-in and app creation in Streamlit Community Cloud.
 
 ## Responsible use and limitations
 
