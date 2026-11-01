@@ -1,81 +1,133 @@
-Explainable Fake News Detector
+# Explainable Fake News Detector
 
-Live Demo: https://explainable-fake-news-detector.streamlit.app/
+A beginner-friendly NLP project that classifies a pasted news article as **FAKE** or **REAL** using a saved TF-IDF vectorizer and Random Forest classifier. It uses **LIME** to show which words influenced an individual prediction.
 
-An Explainable AI-powered Fake News Detection system that identifies whether a news article is REAL or FAKE using Natural Language Processing (NLP), TF-IDF vectorization, linguistic feature engineering, and a Random Forest classifier.
+> **Important limitation:** This is a machine-learning text classifier, not a fact-checking service. It does not verify claims against primary sources, check publication history, or establish whether a story is true. Its output reflects patterns in its training dataset and can be wrong. Always verify important claims with multiple reliable sources.
 
-Unlike traditional black-box models, this project integrates LIME (Local Interpretable Model-Agnostic Explanations) to provide transparent and interpretable predictions, helping users understand why a particular article was classified as misinformation.
+## What this project demonstrates
 
-Features:
-1. Real vs Fake news classification
-2. TF-IDF text vectorization
-3. Linguistic feature engineering
-4. Random Forest classifier
-5. Explainable AI using LIME
-6. Confidence score prediction
-7. Interactive Streamlit interface
-8. Real-time prediction analysis
-9. User-friendly web deployment
+- Text cleaning with NLTK stopwords and WordNet lemmatization
+- TF-IDF feature extraction
+- Random Forest classification
+- Class-probability display
+- Local model explanations with LIME
+- A Streamlit user interface
+- Basic input validation and automated tests
+- GitHub Actions test workflow
 
-Dataset
+## Current model pipeline
 
-Dataset used:
+The checked-in model was trained on TF-IDF features only. The production app therefore uses the same TF-IDF-only feature shape for both predictions and LIME explanations.
 
-Fake and Real News Dataset
+The original training script contains commented-out linguistic feature experiments, but those features were **not** included in the saved model's training matrix. They are not used by the application. This avoids a feature-dimension mismatch between training and inference.
 
-Source:
+The original model artifacts are:
+- `fake_news_model.pkl`
+- `tfidf_vector.pkl`
+
+The model was trained using the Kaggle Fake and Real News Dataset:  
 https://www.kaggle.com/datasets/clmentbisaillon/fake-and-real-news-dataset
 
-ML Pipeline:
-1. Data Collection
-2. Data Cleaning
-3. Text Preprocessing
-4. Feature Engineering
-5. TF-IDF Vectorization
-6. Linguistic Feature Extraction
-7. Feature Combination
-8. Random Forest Training
-9. Model Evaluation
-10. Explainability using LIME
-11. Streamlit Deployment
+## Project structure
 
-Linguistic Features Used:
+```text
+.
+├── app.py                         # Streamlit application
+├── src/
+│   ├── __init__.py
+│   ├── preprocessing.py            # Training-compatible text cleaning
+│   ├── prediction.py               # Model loading and prediction
+│   └── explainability.py            # LIME explanation
+├── tests/
+│   ├── test_preprocessing.py
+│   └── test_prediction.py
+├── .github/workflows/tests.yml     # CI tests
+├── fake_news_model.pkl
+├── tfidf_vector.pkl
+├── requirements.txt
+└── README.md
+```
 
-The model combines TF-IDF features with handcrafted linguistic features:
+The file `Explainable Fake News Detector.py` is the original exploratory training script. It contains local dataset paths from the development machine; edit those paths before rerunning it. It is not needed to run the deployed app.
 
-1. Readability Score
-2. Exclamation Count
-3. Capital Letter Ratio
-4. Average Word Length
+## Run locally
 
-These features improve the model’s ability to identify sensationalized and misleading content.
+### 1. Clone the repository
 
-Explainable AI:
+```bash
+git clone https://github.com/krishna-shanu30/Explainable-fake-news-detector.git
+cd Explainable-fake-news-detector
+```
 
-This project uses LIME (Local Interpretable Model-Agnostic Explanations) to explain individual predictions.
+### 2. Create and activate a virtual environment
 
-LIME highlights:
+Windows PowerShell:
 
-1. Important words influencing predictions
-2. Positive and negative contributions
-3. Why an article is classified as fake or real
+```powershell
+python -m venv .venv
+.venv\Scripts\Activate.ps1
+```
 
-This makes the system more transparent and trustworthy.
+macOS / Linux:
 
-Future Improvements: 
-1. SHAP Explainability
-2. Deep Learning Models (LSTM/BERT)
-3. News URL Analysis
-4. Fact-Checking API Integration
-5. Browser Extension
-6. Multilingual Fake News Detection
-7. News Source Credibility Scoring
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+```
 
-Project Highlights: 
+### 3. Install dependencies and NLTK data
 
-1. Explainable AI System
-2. Trustworthy Machine Learning
-3. NLP-Based Misinformation Detection
-4. Real-World Deployment
-5. Interpretable Predictions
-6. End-to-End AI Application
+```bash
+python -m pip install --upgrade pip
+pip install -r requirements.txt
+python -m nltk.downloader stopwords wordnet
+```
+
+### 4. Start the application
+
+```bash
+streamlit run app.py
+```
+
+Streamlit will print a local URL, usually http://localhost:8501.
+
+## Run tests
+
+```bash
+pytest -q
+```
+
+The GitHub Actions workflow runs the tests on pushes and pull requests targeting `main`.
+
+## Deploy with Streamlit Community Cloud
+
+1. Push the repository to GitHub.
+2. Sign in to https://share.streamlit.io/.
+3. Create an app from this repository.
+4. Select branch `main` and entrypoint `app.py`.
+5. Deploy. The application installs dependencies from `requirements.txt`; the NLTK resources are downloaded during startup only if missing (the current app instead displays a clear setup error if unavailable).
+
+Keep the model and vectorizer files in the repository root, or update the artifact paths in `src/prediction.py`.
+
+## Responsible use and limitations
+
+- A high model confidence is not proof that an article is true or false.
+- The training dataset may contain source, topic, date, or writing-style biases.
+- Performance on current events, regional reporting, non-English content, satire, and rewritten articles is unknown unless separately evaluated.
+- Do not use this project for automated moderation, reputation decisions, or other high-impact decisions.
+- Do not paste confidential or personally identifying information into a hosted demo.
+- Only load trusted pickle/joblib model artifacts. Loading untrusted serialized files can execute malicious code.
+
+## Next steps for a stronger portfolio project
+
+1. Add a reproducible training pipeline that accepts a configurable dataset path instead of a local drive path.
+2. Save and report a held-out evaluation: precision, recall, F1, confusion matrix, and class balance.
+3. Add cross-validation and check for duplicate or near-duplicate articles across train and test splits.
+4. Calibrate probabilities and evaluate calibration before presenting confidence as a reliable probability.
+5. Evaluate on a newer, independent dataset to measure performance on unseen topics and publishers.
+6. Add URL retrieval and trusted-source comparison only with careful source validation and transparent citations.
+7. Track model/data versions and document limitations.
+
+## Tech stack
+
+Python · pandas · NumPy · NLTK · scikit-learn · TF-IDF · Random Forest · LIME · Streamlit · pytest · GitHub Actions
