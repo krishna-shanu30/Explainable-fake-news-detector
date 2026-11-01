@@ -105,7 +105,7 @@ The GitHub Actions workflow runs the tests on pushes and pull requests targeting
 2. Sign in to https://share.streamlit.io/.
 3. Create an app from this repository.
 4. Select branch `main` and entrypoint `app.py`.
-5. Deploy. The application installs dependencies from `requirements.txt`; the NLTK resources are downloaded during startup only if missing (the current app instead displays a clear setup error if unavailable).
+5. Deploy. The application installs dependencies from `requirements.txt`. Download the NLTK resources as shown in the local setup steps before running the app; if they are missing, the app displays a clear setup error.
 
 Keep the model and vectorizer files in the repository root, or update the artifact paths in `src/prediction.py`.
 
